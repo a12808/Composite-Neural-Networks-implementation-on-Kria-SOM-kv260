@@ -24,7 +24,7 @@ Composite-Neural-Networks-implementation-on-Kria-SOM-kv260
 
 | Pasta / Ficheiro       | Conteúdo                                                                                   | Propósito                                                                                           |
 |------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| `Data_Analysis/`       | Scripts Python: `main.py`, `compute.py`, `plot.py`                                        | Análise, processamento e visualização dos dados obtidos nos testes.                                |
+| `Data_Analysis/`       | Scripts de analise                                        | Análise, processamento e visualização dos dados obtidos nos testes.                                |
 | `Data/`                | CSVs de resultados, outputs de inferência e métricas de energia          | Todos os dados obtidos nos testes para permitir reprodução das análises.                 |
 | `Tests/`               | Scripts de execução e recolha de métricas para KV260 e GPU                                | Automatiza a execução dos testes, carregamento dos modelos, inferência e recolha de métricas.     |
 | `imagenet500/`         | Dataset de 500 imagens de referência do ImageNet 
