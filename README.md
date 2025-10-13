@@ -1,1 +1,1 @@
-# -Composite-Neural-Networks-in-the-Kria-KV260
+# -Composite Neural Networks implementation on Kria SOM kv260
