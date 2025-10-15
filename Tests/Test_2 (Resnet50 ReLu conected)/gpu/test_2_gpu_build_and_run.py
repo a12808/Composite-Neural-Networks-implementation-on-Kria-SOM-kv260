@@ -181,6 +181,7 @@ def process_images_gpu(image_paths, labels, val_mapping, model_loader, device, r
             # -------------------------------
             t_start = time.perf_counter()
             fused_output = model_loader.infer(img1_tensor, img2_tensor)
+            torch.cuda.synchronize()
             inference_time = time.perf_counter() - t_start
 
             # -------------------------------
@@ -275,6 +276,7 @@ def TestB3(image_paths, labels, val_mapping, results_csv):
             # -------------------------------
             t_start = time.perf_counter()
             fused_output = model_loader.infer(img1_tensor, img2_tensor)
+            torch.cuda.synchronize()
             inference_time = time.perf_counter() - t_start
 
             # -------------------------------

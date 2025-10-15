@@ -193,6 +193,7 @@ def Test_Baseline(model_path, image_paths, labels, val_mapping, results_csv):
             # inference
             t_start = time.perf_counter()
             output = model.infer(tensor)
+            torch.cuda.synchronize()
             inference_time_1 = time.perf_counter() - t_start
 
             # download
@@ -278,6 +279,7 @@ def Test_Sequential(model_1_path, model_2_path, image_paths, labels, val_mapping
             # inference
             t_start = time.perf_counter()
             output1 = model_1.infer(tensor_1)
+            torch.cuda.synchronize()
             inference_time_1 = time.perf_counter() - t_start
 
             # download
@@ -320,6 +322,7 @@ def Test_Sequential(model_1_path, model_2_path, image_paths, labels, val_mapping
             # inference
             t_start = time.perf_counter()
             output2 = model_2.infer(tensor_2)
+            torch.cuda.synchronize()
             inference_time_2 = time.perf_counter() - t_start
 
             # download

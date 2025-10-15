@@ -191,6 +191,8 @@ def TestC1(image_paths, labels, val_mapping, results_csv):
             with torch.no_grad():
                 output1, output2 = model(img_tensor_1, img_tensor_2)
 
+            torch.cuda.synchronize()
+
             inference_time = time.perf_counter() - t_start
 
             # -------------------------------
@@ -305,6 +307,8 @@ def TestC2(image_paths, labels, val_mapping, results_csv):
             with torch.no_grad():
                 output1 = model.infer_model_1(img_tensor_1)
 
+            torch.cuda.synchronize()
+
             inference_time_1 = time.perf_counter() - t_start
 
             # DOWNLOAD 1
@@ -335,6 +339,8 @@ def TestC2(image_paths, labels, val_mapping, results_csv):
 
             with torch.no_grad():
                 output2 = model.infer_model_2(img_tensor_2)
+
+            torch.cuda.synchronize()
 
             inference_time_2 = time.perf_counter() - t_start
 

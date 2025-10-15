@@ -271,6 +271,8 @@ def TestB1(image_paths, labels, val_mapping, results_csv):
             with torch.no_grad():
                 output1, output2 = model(img1_tensor, img2_tensor)
 
+            torch.cuda.synchronize()
+
             inference_time = time.perf_counter() - t_start
 
             # -------------------------------
@@ -391,6 +393,9 @@ def TestB2(image_paths, labels, val_mapping, results_csv):
             t_start = time.perf_counter()
             with torch.no_grad():
                 output_1 = model.infer_model_1(img_tensor_1)
+
+            torch.cuda.synchronize()
+
             inference_time_1 = time.perf_counter() - t_start
 
             # -------------------------------
@@ -429,6 +434,9 @@ def TestB2(image_paths, labels, val_mapping, results_csv):
             t_start = time.perf_counter()
             with torch.no_grad():
                 output_2 = model.infer_model_2(img_tensor_2)
+
+            torch.cuda.synchronize()
+
             inference_time_2 = time.perf_counter() - t_start
 
             # -------------------------------
