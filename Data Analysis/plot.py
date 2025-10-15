@@ -3,6 +3,7 @@ import os
 from typing import Dict
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+import numpy as np
 
 PLATFORM_COLORS = {'kv260': '#ED1C24', 'gpu': '#76B900'}
 
@@ -331,7 +332,12 @@ def plot_energy(all_results: Dict, platforms, output_path: str):
     print(f'[DEBUG] Energy plot saved to {output_path}')
 
 
-def plot_efficiency_metric(all_results: Dict, platforms, metric_name: str, output_path: str, ylabel: str, scale: float = 1.0):
+def plot_efficiency_metric(all_results: Dict, platforms, metric_name: str,
+                           output_path: str, ylabel: str, scale: float = 1.0,
+                           aggregate: str = "sum"):
+    """
+    aggregate: 'sum' ou 'mean' -> define como combinar eficiências de múltiplos modelos no mesmo teste.
+    """
 
     tests = sorted(all_results.keys())
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -344,30 +350,34 @@ def plot_efficiency_metric(all_results: Dict, platforms, metric_name: str, outpu
     for p in platforms:
         for tname in tests:
             metrics = all_results[tname][p]
-            model_ids = metrics['model_ids']
             eff = metrics['efficiency'][metric_name]
+            model_ids = metrics['model_ids']
 
-            # --- lógica adaptativa ---
-            # se a métrica é "throughput_per_watt", ela é global (por teste)
-            if metric_name == 'throughput_per_watt':
-                positions.append(len(positions))
-                labels.append(f"{tname}-{p.upper()}")
-                values.append(eff * scale)
-                colors.append(PLATFORM_COLORS[p])
-
+            # --- Agregar eficiências de todos os modelos do mesmo teste ---
+            if isinstance(eff, dict):
+                eff_values = [eff[mid] for mid in model_ids if not np.isnan(eff[mid])]
+                if len(eff_values) > 0:
+                    if aggregate == "sum":
+                        eff_value = np.sum(eff_values)
+                    elif aggregate == "mean":
+                        eff_value = np.mean(eff_values)
+                    else:
+                        raise ValueError("aggregate must be 'sum' or 'mean'")
+                else:
+                    eff_value = np.nan
             else:
-                # métricas por modelo (acc_per_joule, correct_imgs_per_joule)
-                for mid in model_ids:
-                    positions.append(len(positions))
-                    labels.append(f"{tname}-M{mid}-{p.upper()}")
-                    val = eff[mid] if isinstance(eff, dict) else eff
-                    values.append(val * scale)
-                    colors.append(PLATFORM_COLORS[p])
+                eff_value = eff  # métricas globais como throughput_per_watt
 
-    ax.bar(positions, values, color=colors, alpha=0.7)
+            # --- Armazenar resultado ---
+            positions.append(len(positions))
+            labels.append(f"{tname}-{p.upper()}")
+            values.append(eff_value * scale)
+            colors.append(PLATFORM_COLORS[p])
+
+    # --- Gráfico ---
+    ax.bar(positions, values, color=colors, alpha=0.8)
     ax.set_ylabel(ylabel)
-    title = f"{ylabel} for {' vs '.join([p.upper() for p in platforms])}"
-    ax.set_title(title)
+    ax.set_title(f"{ylabel} for {' vs '.join([p.upper() for p in platforms])}")
     ax.set_xticks(positions)
     ax.set_xticklabels(labels, rotation=45, ha='right')
 
@@ -378,7 +388,7 @@ def plot_efficiency_metric(all_results: Dict, platforms, metric_name: str, outpu
     plt.tight_layout()
     plt.savefig(output_path)
     plt.close()
-    print(f'[DEBUG] Efficiency plot ({metric_name}) saved to {output_path}')
+    print(f"[DEBUG] Efficiency plot ({metric_name}) saved to {output_path}")
 
 
 def plot_all_data(all_results, output_dir: str):
